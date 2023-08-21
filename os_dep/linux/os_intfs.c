@@ -746,6 +746,8 @@ u16 rtw_recv_select_queue(struct sk_buff *skb)
 }
 
 #endif
+int rtw_ndev_init(struct net_device *dev);
+
 static int rtw_ndev_notifier_call(struct notifier_block * nb, unsigned long state, void *ptr)
 {
 #if (LINUX_VERSION_CODE>=KERNEL_VERSION(3,11,0))
@@ -759,6 +761,13 @@ static int rtw_ndev_notifier_call(struct notifier_block * nb, unsigned long stat
 	if (dev->netdev_ops->ndo_do_ioctl != rtw_ioctl)
 #else
 	if (dev->do_ioctl != rtw_ioctl)
+#endif
+		return NOTIFY_DONE;
+#else
+#if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,29))
+	if (dev->netdev_ops->ndo_init != rtw_ndev_init)
+#else
+	if (dev->init != rtw_ndev_init)
 #endif
 		return NOTIFY_DONE;
 #endif
